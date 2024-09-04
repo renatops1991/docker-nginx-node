@@ -1,0 +1,24 @@
+services:
+  node:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    image: renatops1991/node:prod
+    container_name: node
+    networks:
+      - nodeNetwork
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: renatops1991/nginx:prod
+    container_name: nginx
+    networks:
+      - nodeNetwork
+    ports:
+      - "8080:80"
+
+networks:
+  nodeNetwork:
+    driver: bridge
