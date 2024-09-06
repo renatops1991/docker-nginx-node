@@ -1,12 +1,21 @@
 services:
-  node:
+  app:
     build:
       context: ./node
       dockerfile: Dockerfile
     image: renatops1991/node:prod
-    container_name: node
+    container_name: app
+    entrypoint: dockerize -wait tcp://mysqlDb:3306 -timeout 20s docker-entrypoint.sh
+    command: node app/index.js
     networks:
-      - nodeNetwork
+      - fullCycleNetwork
+    volumes:
+      - ./node:/usr/src
+    tty: true
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysqlDb
 
   nginx:
     build:
@@ -15,10 +24,28 @@ services:
     image: renatops1991/nginx:prod
     container_name: nginx
     networks:
-      - nodeNetwork
+      - fullCycleNetwork
     ports:
       - "8080:80"
+    depends_on:
+      - app
+
+  mysqlDb:
+    image: mysql
+    command: --innodb-use-native-aio=0
+    container_name: mysqlDb
+    restart: always
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=full-cycle-db
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - fullCycleNetwork
 
 networks:
-  nodeNetwork:
+  fullCycleNetwork:
     driver: bridge
