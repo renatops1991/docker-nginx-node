@@ -27,7 +27,6 @@ app.get('/', (req, res) => {
             <ul>
                 ${people.map(person => `<li>${person.name} - ${person.email}</li>`).join('')}
             </ul>`
-        connection.end();
         res.send(fullCycleCompleteBody);
     });
 });
