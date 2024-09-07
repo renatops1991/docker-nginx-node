@@ -1,36 +1,36 @@
 const express = require('express');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 const port = 3000;
 const app = express();
 
-const connection = mysql.createConnection({
-    host: "mysqlDb",
-    user: "root",
-    password: "root",
-    database: "full-cycle-db"
-});
+app.get('/', async (req, res) => {
+    try {
+        const connection = await mysql.createConnection({
+            host: "mysqlDb",
+            user: "root",
+            password: "root",
+            database: "full-cycle-db"
+        });
 
-const query = 'INSERT INTO people (name, email) VALUES ("Full Cycle", "fullcycle@gmail.com")'
-connection.query(query)
+        await connection.query('INSERT INTO people (name, email) VALUES ("Full Cycle", "fullcycle@gmail.com")');
+        const [people] = await connection.query('SELECT * FROM people');
 
-app.get('/', (req, res) => {
-    connection.query('SELECT * FROM people', (err, results) => {
-        const people = results.map(person => ({
-                name: person.name,
-                email: person.email
-        }))
-
-        const fullCycleCompleteBody =`
+        const fullCycleCompleteBody = `
             <h1>Full Cycle</h1>
             <h2>People</h2>
             <ul>
                 ${people.map(person => `<li>${person.name} - ${person.email}</li>`).join('')}
-            </ul>`
+            </ul>`;
+
         res.send(fullCycleCompleteBody);
-    });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 });
+
 
 app.listen(port, () => {
     console.log(`listening on port ${port}!`);
 });
+
