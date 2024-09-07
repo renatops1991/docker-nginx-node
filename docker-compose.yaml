@@ -10,7 +10,7 @@ services:
     networks:
       - fullCycleNetwork
     volumes:
-      - ./node:/usr/src
+      - ./node:/usr/src/app .
     tty: true
     ports:
       - "3000:3000"
@@ -40,6 +40,7 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql:/var/lib/mysql
+      - ./schemas:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_DATABASE=full-cycle-db
       - MYSQL_ROOT_PASSWORD=root
