@@ -10,7 +10,7 @@ services:
     networks:
       - fullCycleNetwork
     volumes:
-      - ./node:/usr/src/app .
+      - ./node:/usr/src/app
     tty: true
     ports:
       - "3000:3000"
