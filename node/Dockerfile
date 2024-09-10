@@ -3,7 +3,10 @@ FROM node:20 AS builder
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-COPY . .
+
+COPY app/ ./
+
+RUN npm install
 
 ENV DOCKERIZE_VERSION=v0.8.0
 
@@ -12,6 +15,5 @@ RUN apt-get update \
     && wget -O - https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz | tar xzf - -C /usr/local/bin \
     && apt-get autoremove -yqq --purge wget \
     && rm -rf /var/lib/apt/lists/* \
-    && npm install
 
 EXPOSE 3000
